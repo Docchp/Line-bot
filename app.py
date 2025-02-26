@@ -27,7 +27,7 @@ IMAGE_RESPONSES = [
 
 @app.route("/callback", methods=["POST"])
 def callback():
-    signature = request.headers["X-Line-Signature"]
+    signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text=True)
 
     try:
@@ -35,7 +35,7 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
-    return "OK"
+    return "OK", 200  # ✅ ต้องคืนค่า 200 เสมอ
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
@@ -51,15 +51,5 @@ def handle_image_message(event):
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
-from flask import Flask, request
-
-app = Flask(__name__)
-
-@app.route("/callback", methods=["POST"])
-def callback():
-    return "OK", 200  # ✅ ต้องคืนค่า 200 เสมอ
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))  # ใช้พอร์ตที่ Render กำหนด
+    app.run(host="0.0.0.0", port=port, debug=True)
