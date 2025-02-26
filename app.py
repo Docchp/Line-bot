@@ -52,3 +52,14 @@ def handle_image_message(event):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route("/callback", methods=["POST"])
+def callback():
+    return "OK", 200  # ✅ ต้องคืนค่า 200 เสมอ
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)
