@@ -49,7 +49,7 @@ def callback():
 def handle_text_message(event):
     user_text = event.message.text.strip()
 
-    if user_text == "กิจกรรมวาดรูป":
+    if user_text == "11":
         reply_text = random.choice(DRAWING_WORDS)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
