@@ -6,12 +6,16 @@ import random
 import os
 from dotenv import load_dotenv
 
-# โหลดตัวแปรจากไฟล์ .env (ถ้ามี)
+# โหลดตัวแปรจากไฟล์ .env
 load_dotenv()
 
 # ใช้ Channel Access Token และ Channel Secret จาก Environment Variable
 CHANNEL_ACCESS_TOKEN = os.getenv("CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
+
+# ตรวจสอบว่า Token และ Secret ถูกต้อง
+if not CHANNEL_ACCESS_TOKEN or not CHANNEL_SECRET:
+    raise ValueError("❌ CHANNEL_ACCESS_TOKEN หรือ CHANNEL_SECRET ไม่มีค่า กรุณาตั้งค่า Environment Variables")
 
 app = Flask(__name__)
 
@@ -24,6 +28,10 @@ IMAGE_RESPONSES = [
     "คุณมีความละเอียดและความคิดสร้างสรรค์ที่น่าทึ่ง",
     "ฉันรู้สึกชื่นชมผลงานของคุณมากจริงๆ ค่ะ"
 ]
+
+@app.route("/")
+def home():
+    return "Hello, Render!"
 
 @app.route("/callback", methods=["POST"])
 def callback():
@@ -41,7 +49,7 @@ def callback():
 def handle_text_message(event):
     user_text = event.message.text.strip()
 
-    if user_text == "11":
+    if user_text == "กิจกรรมวาดรูป":
         reply_text = random.choice(DRAWING_WORDS)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
@@ -51,5 +59,5 @@ def handle_image_message(event):
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # ใช้พอร์ตที่ Render กำหนด
-    app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 8080))  # ✅ ใช้พอร์ต 8080 ตาม Render
+    app.run(host="0.0.0.0", port=port)
